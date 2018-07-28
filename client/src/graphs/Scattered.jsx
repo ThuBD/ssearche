@@ -1,20 +1,26 @@
 import React, { Component } from 'react';
+import ReactDOM from 'react-dom'
 import faker from 'faker';
 import moment from 'moment';
+import HasOffers from './scatteredComponents/hasOffers.jsx';
 
 class Scattered extends Component {
   constructor(props) {
     super(props);
     this.state = {
-    
+
     }
   }
 
   componentDidMount () {
     // For now, create some fake data upon mounting;
     // Need Company name, date accepted, accepted status, salary offered
+    // This section will be removed promptly after database is fully established
+    // any computation will in the future be handled in the server
+
     let randomNumb;
 
+    let offerCount = 0;
     let numbApplied = 20 + Math.ceil(300 * Math.random());
     let data = []
     for (var i = 0; i < numbApplied; i++) {
@@ -33,19 +39,22 @@ class Scattered extends Component {
         let lowerLimit = 55000 + daysSinceFirstApp * 10000 / (daysSinceFirstApp + 50);
         let upperLimit = 105000 + daysSinceFirstApp * 40000 / (daysSinceFirstApp + 50);
         data[i].salary = faker.commerce.price(lowerLimit, upperLimit, 2, "$");
+        offerCount++;
       } else {
         data[i].status = 'rejected';
         data[i].salary = null;
       }
     }
-    console.log(data);
+    if (offerCount > 1) {
+      ReactDOM.render(<HasOffers data={data}/>, document.getElementById('hasOffers'));
+    }
   }
 
   // renders entire earnings section with YAxis, DataPoints, XAxis, and Descriptions as subcomponents
   render () {
     return (
-      <div>
-      Scattered
+      <div id='hasOffers'>
+      You Don't Have More Than Two or More Offers Yet!
       </div>
     ) 
   }
