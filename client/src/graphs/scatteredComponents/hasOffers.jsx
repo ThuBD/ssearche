@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
+import moment from 'moment'
 import YAxis from './yAxis.jsx';
 import XAxis from './xAxis.jsx';
 import DataPoints from './dataPoints.jsx';
@@ -13,8 +15,93 @@ class HasOffers extends Component {
       datesHeard : [],
       salaries : [],
       yAxisValues : [],
+      xAxisValues : [],
       trigger : false
     }
+  }
+
+  produceYAxisArray () {
+    let valuesInNumb = this.state.salaries.map((element) => {
+      return Number(element.substring(1));
+    });
+    let minY = Math.min(...valuesInNumb);
+    let maxY = Math.max(...valuesInNumb);
+    let padding = (maxY - minY) * 0.2;
+    minY = Math.round((minY - padding)/10000) * 10000;
+    maxY = Math.round((maxY + padding)/10000) * 10000;
+    let interval = (maxY - minY) / 5;
+
+    return (['$' + String(maxY), '$' + String(minY + 4 * interval), '$' + String(minY + 3 * interval), '$' + String(minY + 2 * interval), '$' + String(minY + 1 * interval), '$' + String(minY)]);
+  }
+
+  produceXAxisArray () {
+    let minX = this.state.datesHeard.reduce((accum, element) => {
+      if (element.getTime() < accum.getTime()) {
+        return element;
+      }
+      return accum;
+    });
+    
+    let maxX = this.state.datesHeard.reduce((accum, element) => {
+      if (element.getTime() > accum.getTime()) {
+        return element;
+      }
+      return accum;
+    });
+
+    let minMoment = moment([minX.getFullYear(), minX.getMonth(), minX.getDate()]);
+    let maxMoment = moment([maxX.getFullYear(), maxX.getMonth(), maxX.getDate()]);
+    let dayRange = maxMoment.diff(minMoment, 'days');
+
+    // make sure data are more than a day apart
+    if (dayRange > 1) {
+      this.renderComponentsIfMetCondition();
+    }
+
+    let numberOfTicks = this.decideSizeOfAxis(dayRange);
+
+    return [];
+  }
+
+  decideSizeOfXAxis (dayRange) {
+    if (dayRange === 1) {
+      return 2
+    }
+    if (dayRange === 2) {
+      return 3
+    }
+    if (dayRange === 3) {
+      return 4
+    }
+    if (dayRange === 4) {
+      return 5
+    }
+    if (dayRange === 5) {
+      return 6
+    }
+    return 7
+  }
+
+  renderComponentsIfMetCondition () {
+    ReactDOM.render(
+        <YAxis
+          values={this.state.yAxisValues}
+        />
+      , document.getElementById('attachYAxis'));
+
+      ReactDOM.render(
+        <DataPoints 
+          x={this.state.datesHeard}
+          y={this.state.salaries}
+          name={this.state.companies}
+        />
+      , document.getElementById('attachDataPoints'));
+
+      ReactDOM.render(
+        <XAxis
+          values={this.state.datesHeard}
+        />
+      , document.getElementById('attachXAxis'));
   }
 
   componentDidMount () {
@@ -40,24 +127,17 @@ class HasOffers extends Component {
 
   componentDidUpdate () {
     // create values for yAxis based on range of salaries
+    let yAxisValues = this.produceYAxisArray();
 
-    let yAxisValues = [];
-    let valuesInNumb = this.state.salaries.map((element) => {
-      return Number(element.substring(1));
-    });
-    console.log(valuesInNumb)
-    let min = Math.min(...valuesInNumb);
-    let max = Math.max(...valuesInNumb);
-    let padding = (max - min) * 0.2;
-    min = Math.round((min - padding)/10000) * 10000;
-    max = Math.round((max + padding)/10000) * 10000;
-    let interval = (max - min) / 5;
-    yAxisValues = ['$' + String(max), '$' + String(min + 4 * interval), '$' + String(min + 3 * interval), '$' + String(min + 3 * interval), '$' + String(min + 3 * interval), '$' + String(min)];
+    // also create values for xAxis based on range of dates
+    // edge cases, multiple in only one day
+    let xAxisValues = this.produceXAxisArray();
+
     if (!this.state.trigger) {
       this.setState({ yAxisValues : yAxisValues, trigger : true });
     }
   }
-  
+
   // renders entire section with YAxis, DataPoints, XAxis, and Descriptions as subcomponents
   render () {
     return (
@@ -69,17 +149,9 @@ class HasOffers extends Component {
           <div className="chartContainer">
             <div className="innerChartContainer">
               <div className="axes">
-                <YAxis
-                  values={this.state.yAxisValues}
-                />
-                <DataPoints 
-                  x={this.state.datesHeard}
-                  y={this.state.salaries}
-                  name={this.state.companies}
-                />
-                <XAxis
-                  values={this.state.datesHeard}
-                />
+                <div id="attachYAxis">Required to get offers on two separate days!</div>
+                <div id="attachDataPoints"></div>
+                <div id="attachXAxis"></div>    
               </div>
             </div>
           </div>
