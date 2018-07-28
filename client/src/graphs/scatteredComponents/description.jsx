@@ -16,7 +16,6 @@ class Description extends Component {
   render () {
     return (
       <div>
-      Desc
       </div>
     ) 
   }

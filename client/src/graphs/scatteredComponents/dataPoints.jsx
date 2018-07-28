@@ -9,37 +9,30 @@ class DataPoints extends Component {
     }
   }
 
-  render () {
-    return (
-      <div></div>
-    )
+  componentDidUpdate () {
+    if (this.state.trigger === false) {
+      this.setState({
+        trigger : true
+      });
+    }
   }
 
-  // componentDidUpdate () {
-  //   if (this.state.trigger === false) {
-  //     this.setState({
-        
-  //       trigger : true
-  //     });
-  //   }
-  // }
-
-  // render () {
-  //   return (
-  //     <svg className="xs" width="560" height="120">
-  //       {this.props.estimate.map((data, index) => {
-  //         return (
-  //           <DataPoint
-  //             estimatePoint={Number(data.substring(1))}
-  //             actualPoint={Number(this.state.actual[index].substring(1))}
-  //             yRange={this.props.yRange}
-  //             ind={index + 1}
-  //           />
-  //         );
-  //       })}
-  //     </svg>
-  //   );
-  // }
+  render () {
+    return (
+      <svg className="xs" width="700" height="300">
+        {this.props.y.map((yVal, index) => {
+          return (
+            <DataPoint
+              salary={Number(yVal.substring(1))}
+              date={Number(this.props.x[index])}
+              company={this.props.company}
+              ind={index + 1}
+            />
+          );
+        })}
+      </svg>
+    );
+  }
 }
 
 export default DataPoints;

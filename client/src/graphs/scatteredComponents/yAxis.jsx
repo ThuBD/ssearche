@@ -14,6 +14,7 @@ class YAxis extends Component {
             <YAxisTick 
               yValue={yTick}
               ind={index + 1}
+              factor={index / this.props.values.length}
             />
           );
         })}

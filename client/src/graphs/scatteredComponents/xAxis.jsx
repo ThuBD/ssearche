@@ -14,6 +14,7 @@ class XAxis extends Component {
             <XAxisTick 
               xValue={date}
               ind={index + 1}
+              factor={index / this.props.values.length}
             />
           );
         })}

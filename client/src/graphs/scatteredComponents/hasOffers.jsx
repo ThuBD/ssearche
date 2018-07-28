@@ -29,9 +29,22 @@ class HasOffers extends Component {
     let padding = (maxY - minY) * 0.2;
     minY = Math.round((minY - padding)/10000) * 10000;
     maxY = Math.round((maxY + padding)/10000) * 10000;
-    let interval = (maxY - minY) / 5;
 
-    return (['$' + String(maxY), '$' + String(minY + 4 * interval), '$' + String(minY + 3 * interval), '$' + String(minY + 2 * interval), '$' + String(minY + 1 * interval), '$' + String(minY)]);
+    let difference = maxY - minY;
+    let yAxisSize = this.decideSizeOfYAxis();
+
+    if (yAxisSize === 0) {
+      this.renderYComponentsIfMetCondition();
+      return [];
+    } else {
+      let interval = (maxY - minY) / yAxisSize;
+      let output = [];
+      for (let i = yAxisSize; i >= 0; i--) {
+        output.push('$' + String(minY + i * interval));
+      }
+      return output;
+    }
+
   }
 
   produceXAxisArray () {
@@ -57,7 +70,7 @@ class HasOffers extends Component {
 
     // make sure data are more than a day apart
     if (dayRange > 1) {
-      this.renderComponentsIfMetCondition();
+      this.renderXComponentsIfMetCondition();
     }
 
     let numberOfTicks = this.decideSizeOfXAxis(dayRange);
@@ -80,6 +93,25 @@ class HasOffers extends Component {
     return output;
   }
 
+  decideSizeOfYAxis (difference) {
+    if (difference === 0) {
+      return 0;
+    }
+    if (difference > 0 && difference < 10000) {
+      return 1;
+    }
+    if (difference >= 10000 && difference < 20000 ) {
+      return 2;
+    }
+    if (difference >= 20000 && difference < 30000) {
+      return 3;
+    }
+    if (difference >= 30000 && difference < 40000) {
+      return 4;
+    }
+    return 5;
+  }
+
   decideSizeOfXAxis (dayRange) {
     if (dayRange === 1) {
       return 2;
@@ -99,7 +131,15 @@ class HasOffers extends Component {
     return 5;
   }
 
-  renderComponentsIfMetCondition () {
+  renderYComponentsIfMetCondition () {
+    ReactDOM.render(
+        <ErrorY
+          values={this.state.yAxisValues}
+        />
+      , document.getElementById('errorHere'));
+  }
+
+  renderXComponentsIfMetCondition () {
     ReactDOM.render(
         <YAxis
           values={this.state.yAxisValues}
@@ -166,7 +206,7 @@ class HasOffers extends Component {
         <div className="chartDiv">
           <div className="chartContainer">
             <div className="innerChartContainer">
-              <div className="axes">
+              <div className="axes" id="errorHere">
                 <div id="attachYAxis">Required to get offers on two separate days!</div>
                 <div id="attachDataPoints"></div>
                 <div id="attachXAxis"></div>    
