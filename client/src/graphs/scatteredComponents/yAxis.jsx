@@ -1,24 +1,24 @@
 import React, { Component } from 'react';
+import YAxisTick from './yAxisTick.jsx';
 
 class YAxis extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-    
-    }
   }
 
-  componentDidMount () {
-    
-  }
-
-  // renders entire earnings section with YAxis, DataPoints, XAxis, and Descriptions as subcomponents
   render () {
     return (
-      <div>
-      y
+      <div className="ylabel">
+        {this.props.values.map((yTick, index)=>{
+          return (
+            <YAxisTick 
+              yValue={yTick}
+              ind={index + 1}
+            />
+          );
+        })}
       </div>
-    ) 
+    );
   }
 }
 

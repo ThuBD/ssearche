@@ -11,12 +11,13 @@ class HasOffers extends Component {
       companies : [],
       datesApplied : [],
       datesHeard : [],
-      salaries : []
+      salaries : [],
+      yAxisValues : [],
+      trigger : false
     }
   }
 
   componentDidMount () {
-    console.log(this.state)
     let companies = [];
     let datesApplied = [];
     let datesHeard = [];
@@ -38,9 +39,26 @@ class HasOffers extends Component {
   }
 
   componentDidUpdate () {
-    console.log(this.state)
+    // create values for yAxis based on range of salaries
+
+    let yAxisValues = [];
+    let valuesInNumb = this.state.salaries.map((element) => {
+      return Number(element.substring(1));
+    });
+    console.log(valuesInNumb)
+    let min = Math.min(...valuesInNumb);
+    let max = Math.max(...valuesInNumb);
+    let padding = (max - min) * 0.2;
+    min = Math.round((min - padding)/10000) * 10000;
+    max = Math.round((max + padding)/10000) * 10000;
+    let interval = (max - min) / 5;
+    yAxisValues = ['$' + String(max), '$' + String(min + 4 * interval), '$' + String(min + 3 * interval), '$' + String(min + 3 * interval), '$' + String(min + 3 * interval), '$' + String(min)];
+    if (!this.state.trigger) {
+      this.setState({ yAxisValues : yAxisValues, trigger : true });
+    }
   }
-  // renders entire earnings section with YAxis, DataPoints, XAxis, and Descriptions as subcomponents
+  
+  // renders entire section with YAxis, DataPoints, XAxis, and Descriptions as subcomponents
   render () {
     return (
       <section id="scatteredComponent">
@@ -51,17 +69,22 @@ class HasOffers extends Component {
           <div className="chartContainer">
             <div className="innerChartContainer">
               <div className="axes">
-                <YAxis 
+                <YAxis
+                  values={this.state.yAxisValues}
                 />
                 <DataPoints 
+                  x={this.state.datesHeard}
+                  y={this.state.salaries}
+                  name={this.state.companies}
                 />
-                <XAxis 
+                <XAxis
+                  values={this.state.datesHeard}
                 />
               </div>
             </div>
           </div>
         </div>
-        <Description 
+        <Description
         /> 
       </section>
     ) 
