@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import $ from 'jquery';
 import Userinput from './userinput.jsx'
 import Dropdown from './select.jsx'
+import GraphSelect from './graphs/graphSelector.jsx'
 
 class App extends React.Component {
   constructor(props) {
@@ -14,7 +15,7 @@ class App extends React.Component {
       <div>
       RENDERED
       <Dropdown />
-
+      <GraphSelect />
       </div> 
     )
   }
