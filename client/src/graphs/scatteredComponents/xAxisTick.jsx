@@ -9,7 +9,7 @@ class XAxisTick extends Component {
     return (
       <span className={"x-" + this.props.ind}>
         <div className={"x" + this.props.ind}>
-          {this.props.xValue.getDate()}
+          {this.props.xValue}
         </div>
       </span>
     );

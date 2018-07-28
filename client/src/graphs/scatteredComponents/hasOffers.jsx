@@ -35,12 +35,14 @@ class HasOffers extends Component {
   }
 
   produceXAxisArray () {
+    let output = [];
     let minX = this.state.datesHeard.reduce((accum, element) => {
       if (element.getTime() < accum.getTime()) {
         return element;
       }
       return accum;
     });
+    output.push(minX);
     
     let maxX = this.state.datesHeard.reduce((accum, element) => {
       if (element.getTime() > accum.getTime()) {
@@ -58,28 +60,43 @@ class HasOffers extends Component {
       this.renderComponentsIfMetCondition();
     }
 
-    let numberOfTicks = this.decideSizeOfAxis(dayRange);
+    let numberOfTicks = this.decideSizeOfXAxis(dayRange);
 
-    return [];
+    let msInterval = Math.round(dayRange / numberOfTicks) * 86400000;
+    let ind = 0;
+    let upperLimit = maxX.getTime();
+
+    while (output[ind].getTime() < upperLimit) {
+      output.push(new Date(output[ind].getTime() + msInterval));
+      ind++
+    };
+    output.unshift(new Date(output[0].getTime() - msInterval));
+
+    console.log(output)
+
+    output = output.map((element) => {
+      return ((element.getMonth() + 1) + '/' + element.getDate() + '/' + element.getFullYear());
+    });
+    return output;
   }
 
   decideSizeOfXAxis (dayRange) {
     if (dayRange === 1) {
-      return 2
+      return 2;
     }
     if (dayRange === 2) {
-      return 3
+      return 3;
     }
     if (dayRange === 3) {
-      return 4
+      return 4;
     }
     if (dayRange === 4) {
-      return 5
+      return 5;
     }
     if (dayRange === 5) {
-      return 6
+      return 6;
     }
-    return 7
+    return 5;
   }
 
   renderComponentsIfMetCondition () {
@@ -99,7 +116,7 @@ class HasOffers extends Component {
 
       ReactDOM.render(
         <XAxis
-          values={this.state.datesHeard}
+          values={this.state.xAxisValues}
         />
       , document.getElementById('attachXAxis'));
   }
@@ -127,6 +144,7 @@ class HasOffers extends Component {
 
   componentDidUpdate () {
     // create values for yAxis based on range of salaries
+    console.log(this.state.datesHeard);
     let yAxisValues = this.produceYAxisArray();
 
     // also create values for xAxis based on range of dates
@@ -134,7 +152,7 @@ class HasOffers extends Component {
     let xAxisValues = this.produceXAxisArray();
 
     if (!this.state.trigger) {
-      this.setState({ yAxisValues : yAxisValues, trigger : true });
+      this.setState({ yAxisValues : yAxisValues, xAxisValues : xAxisValues, trigger : true });
     }
   }
 
