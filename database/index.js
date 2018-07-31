@@ -6,9 +6,9 @@ const userSchema = mongoose.Schema({
 	"username": String,
 	"password": String,
 	"user_email": String,
-	"created_at": String,
-	"jobs": Array,
-	"graphs": Number // id of the graphs
+	"created_at": {type: Date, default: Date.now},
+	"jobs": [{type: mongoose.Schema.Types.ObjectId, ref: 'Jobs'}],
+	"graphs": [{type: mongoose.Schema.Types.ObjectId, ref: 'Graphs'}] // id of the graphs
 });
 
 const jobsSchema = mongoose.Schema({
@@ -21,6 +21,7 @@ const jobsSchema = mongoose.Schema({
 	"resume_or_cv": String,
 	"cover_letter": String,
 	"personal_rating": Number,
+	"created_at": {type: Date, default: Date.now},
 	"display": Boolean
 })
 
@@ -33,7 +34,7 @@ const graphsSchema = mongoose.Schema({
 });
 
 const Users = mongoose.model('Users', userSchema);
-const jobsSchema = mongoose.model('Jobs', jobsSchema);
+const Jobs = mongoose.model('Jobs', jobsSchema);
 const Graphs = mongoose.model('Graphs', graphsSchema);
 
 const saveUserInit = (userInput) => {
@@ -42,31 +43,72 @@ const saveUserInit = (userInput) => {
 			console.log(err);
 			return;
 		} else {
-			var data = {};
-			data.username = userInput.username;
-			data.password = res;
-			data.user_email = userInput.email;
-			var currentTime = new Date();
-			var month = currentTime.getMonth() + 1;
-			var date = currentTime.getDate();
-			var year = currentTime.getFullYear();
-			var hour = currentTime.getHours();
-			var minute = currentTime.getMinutes();
-			var second = currentTime.getSeconds();
-			data.created_at = `${month}/${date}/${year} ${hour}:${minute}:${second}`;
-			data.jobs = [];
-			data.graphs = 0;
-			let newUser = new Users(data);
-			newUser.save((err, user) => {
-				if (err) {
-					console.error(err);
-					return err;
+			Users.find({username: userInput.username}, (err, user) => {
+				if (user.length > 0) {
+					console.log('Already have user');
 				} else {
-					return user;
+					var data = {};
+					data.username = userInput.username;
+					data.password = res;
+					data.user_email = userInput.email;
+					// var month = currentTime.getMonth() + 1;
+					// var date = currentTime.getDate();
+					// var year = currentTime.getFullYear();
+					// var hour = currentTime.getHours();
+					// var minute = currentTime.getMinutes();
+					// var second = currentTime.getSeconds();
+					// data.created_at = `${month}/${date}/${year} ${hour}:${minute}:${second}`;
+					data.jobs = [];
+					data.graphs = [];
+					let newUser = new Users(data);
+					newUser.save((err, data) => {
+						if (err) {
+							console.log(err);
+						} else {
+							console.log('successfully saved');
+							console.log(data);
+						}
+					})
 				}
 			})
 		}
 	})	
 };
 
+const getUserId = (username, callback) => {
+	Users.find({username: username}, (err, user) => {
+		if (err) {
+			callback(err);
+		} else {
+			callback(null, user[0]._id);
+		}
+	});
+}
+
+const saveJob = (username, details) => {
+	getUserId(username, (err, user) => {
+		if (err) {
+			console.log(err);
+		} else {
+			let job = new Jobs(details);
+			job.save((err, data) => {
+				if (err) {
+					console.log(err);
+				} else {
+					console.log(data._id);
+					Users.findOneAndUpdate({_id: user._id}, {$push: {jobs: data._id}}, (err, saved) => {
+						if (err) {
+							console.log(err);
+						} else {
+							console.log('saved', saved);
+						}
+					});
+				}
+			})
+		}
+	})
+}
+
 module.exports.saveUserInit = saveUserInit;
+module.exports.getUserId = getUserId;
+module.exports.saveJob = saveJob;
