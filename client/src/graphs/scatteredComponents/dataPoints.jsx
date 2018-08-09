@@ -1,20 +1,15 @@
 import React, { Component } from 'react';
-import DataPoint from './dataPoint.jsx'
+import DataPoint from './dataPoint.jsx';
+import moment from 'moment'
 
 class DataPoints extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      trigger : false
     }
   }
 
-  componentDidUpdate () {
-    if (this.state.trigger === false) {
-      this.setState({
-        trigger : true
-      });
-    }
+  componentDidMount () {
   }
 
   render () {
@@ -24,9 +19,15 @@ class DataPoints extends Component {
           return (
             <DataPoint
               salary={Number(yVal.substring(1))}
-              date={Number(this.props.x[index])}
+              date={new Date(Number(this.props.x[index]))}
               company={this.props.company}
+              yMin={this.props.yMin}
+              xMin={this.props.xMin}
+              xMax={this.props.xMax}
+              yRange={this.props.yRange}
+              xRange={this.props.xRange}
               ind={index + 1}
+              mainGraphComp={this.props.mainGraphComp}
             />
           );
         })}

@@ -21,7 +21,7 @@ class Scattered extends Component {
     let randomNumb;
 
     let offerCount = 0;
-    let numbApplied = 20 + Math.ceil(300 * Math.random());
+    let numbApplied = 30 + Math.ceil(300 * Math.random());
     let data = []
     for (var i = 0; i < numbApplied; i++) {
       randomNumb =  Math.random();
@@ -34,9 +34,9 @@ class Scattered extends Component {
       // let b = moment([]);
       let daysSinceFirstApp = b.diff(a, 'days');
       data[i].company = faker.company.companyName();
-      if (randomNumb > 0.95) {
+      if (randomNumb > 0.97) {
         data[i].status = 'accepted';
-        let lowerLimit = 55000 + daysSinceFirstApp * 10000 / (daysSinceFirstApp + 50);
+        let lowerLimit = 55000 + daysSinceFirstApp * 20000 / (daysSinceFirstApp + 50);
         let upperLimit = 105000 + daysSinceFirstApp * 40000 / (daysSinceFirstApp + 50);
         data[i].salary = faker.commerce.price(lowerLimit, upperLimit, 2, "$");
         offerCount++;

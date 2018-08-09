@@ -16,7 +16,17 @@ class HasOffers extends Component {
       salaries : [],
       yAxisValues : [],
       xAxisValues : [],
-      trigger : false
+      trigger : false,
+      yMin : null,
+      xMin : null,
+      xMax : null,
+      yRange : null,
+      xRange : null,
+      showDescription : false,
+      showCompany : null,
+      showDate : null,
+      showSalary : null,
+      showMore : null
     }
   }
 
@@ -42,9 +52,8 @@ class HasOffers extends Component {
       for (let i = yAxisSize; i >= 0; i--) {
         output.push('$' + String(minY + i * interval));
       }
-      return output;
+      return [output, Number(output[output.length - 1].substring(1)), (maxY - minY)];
     }
-
   }
 
   produceXAxisArray () {
@@ -77,7 +86,7 @@ class HasOffers extends Component {
 
     let msInterval = Math.round(dayRange / numberOfTicks) * 86400000;
     let ind = 0;
-    let upperLimit = maxX.getTime();
+    let upperLimit = maxX.getTime() + msInterval / 3;
 
     while (output[ind].getTime() < upperLimit) {
       output.push(new Date(output[ind].getTime() + msInterval));
@@ -85,12 +94,10 @@ class HasOffers extends Component {
     };
     output.unshift(new Date(output[0].getTime() - msInterval));
 
-    console.log(output)
-
     output = output.map((element) => {
       return ((element.getMonth() + 1) + '/' + element.getDate() + '/' + element.getFullYear());
     });
-    return output;
+    return [output, new Date(output[0]), dayRange, new Date(output[output.length - 1])];
   }
 
   decideSizeOfYAxis (difference) {
@@ -151,6 +158,12 @@ class HasOffers extends Component {
           x={this.state.datesHeard}
           y={this.state.salaries}
           name={this.state.companies}
+          yMin={this.state.yMin}
+          xMin={this.state.xMin}
+          xMax={this.state.xMax}
+          yRange={this.state.yRange}
+          xRange={this.state.xRange}
+          mainGraphComp={this}
         />
       , document.getElementById('attachDataPoints'));
 
@@ -159,6 +172,12 @@ class HasOffers extends Component {
           values={this.state.xAxisValues}
         />
       , document.getElementById('attachXAxis'));
+
+      ReactDOM.render(
+        <Description
+
+        />
+      , document.getElementById('attachDescription'));
   }
 
   componentDidMount () {
@@ -184,15 +203,13 @@ class HasOffers extends Component {
 
   componentDidUpdate () {
     // create values for yAxis based on range of salaries
-    console.log(this.state.datesHeard);
     let yAxisValues = this.produceYAxisArray();
-
     // also create values for xAxis based on range of dates
     // edge cases, multiple in only one day
     let xAxisValues = this.produceXAxisArray();
-
+    console.log(xAxisValues[3]);
     if (!this.state.trigger) {
-      this.setState({ yAxisValues : yAxisValues, xAxisValues : xAxisValues, trigger : true });
+      this.setState({ yAxisValues : yAxisValues[0], xAxisValues : xAxisValues[0], trigger : true, yMin : yAxisValues[1], yRange : yAxisValues[2], xMin : xAxisValues[1], xMax : xAxisValues[3], xRange : xAxisValues[2]});
     }
   }
 
@@ -209,7 +226,8 @@ class HasOffers extends Component {
               <div className="axes" id="errorHere">
                 <div id="attachYAxis">Required to get offers on two separate days!</div>
                 <div id="attachDataPoints"></div>
-                <div id="attachXAxis"></div>    
+                <div id="attachXAxis"></div>
+                <div id="attachDescription"></div>
               </div>
             </div>
           </div>
