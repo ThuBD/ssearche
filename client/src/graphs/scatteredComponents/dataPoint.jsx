@@ -14,7 +14,7 @@ class DataPoint extends Component {
   }
 
   enterHandler(e) {
-    this.props.mainGraphComp.setState({showDescription : true, showCompany : this.props.name, showDate : this.props.date, showMore : 'This feature to be improved!! =)', showSalary : this.props.salary});
+    this.props.mainGraphComp.setState({showDescription : true, showCompany : this.props.company, showDate : this.props.date, showMore : 'This feature to be improved!! =)', showSalary : this.props.salary});
   }
 
   leaveHandler(e) {
@@ -22,7 +22,6 @@ class DataPoint extends Component {
   }
 
   componentDidMount () {
-    console.log(this.props.mainGraphComp)
     let currX = this.props.date;
     let minX = this.props.xMin;
     let maxX = this.props.xMax;

@@ -5,6 +5,7 @@ import YAxis from './yAxis.jsx';
 import XAxis from './xAxis.jsx';
 import DataPoints from './dataPoints.jsx';
 import Description from './description.jsx';
+import BlankDescription from './blankDescription.jsx';
 
 class HasOffers extends Component {
   constructor(props) {
@@ -36,7 +37,7 @@ class HasOffers extends Component {
     });
     let minY = Math.min(...valuesInNumb);
     let maxY = Math.max(...valuesInNumb);
-    let padding = (maxY - minY) * 0.2;
+    let padding = (maxY - minY) * 0.24;
     minY = Math.round((minY - padding)/10000) * 10000;
     maxY = Math.round((maxY + padding)/10000) * 10000;
 
@@ -172,12 +173,6 @@ class HasOffers extends Component {
           values={this.state.xAxisValues}
         />
       , document.getElementById('attachXAxis'));
-
-      ReactDOM.render(
-        <Description
-
-        />
-      , document.getElementById('attachDescription'));
   }
 
   componentDidMount () {
@@ -203,14 +198,29 @@ class HasOffers extends Component {
 
   componentDidUpdate () {
     // create values for yAxis based on range of salaries
-    let yAxisValues = this.produceYAxisArray();
     // also create values for xAxis based on range of dates
     // edge cases, multiple in only one day
-    let xAxisValues = this.produceXAxisArray();
-    console.log(xAxisValues[3]);
+      let yAxisValues = this.produceYAxisArray();
+      let xAxisValues = this.produceXAxisArray();
     if (!this.state.trigger) {
       this.setState({ yAxisValues : yAxisValues[0], xAxisValues : xAxisValues[0], trigger : true, yMin : yAxisValues[1], yRange : yAxisValues[2], xMin : xAxisValues[1], xMax : xAxisValues[3], xRange : xAxisValues[2]});
     }
+    if (this.state.showDescription) {
+      ReactDOM.render(
+        <Description
+          company={this.state.showCompany}
+          date={this.state.showDate}
+          showMore={this.state.showMore}
+          salary={this.state.showSalary}
+        />
+      , document.getElementById('attachDescription'));
+    } else {
+      ReactDOM.render(
+        <BlankDescription
+        />
+      , document.getElementById('attachDescription'));
+    }
+    
   }
 
   // renders entire section with YAxis, DataPoints, XAxis, and Descriptions as subcomponents
@@ -227,13 +237,11 @@ class HasOffers extends Component {
                 <div id="attachYAxis">Required to get offers on two separate days!</div>
                 <div id="attachDataPoints"></div>
                 <div id="attachXAxis"></div>
-                <div id="attachDescription"></div>
               </div>
             </div>
           </div>
         </div>
-        <Description
-        /> 
+        <div id="attachDescription"></div> 
       </section>
     ) 
   }

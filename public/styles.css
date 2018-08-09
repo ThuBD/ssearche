@@ -57,3 +57,8 @@
   top : 385px;
   font-size : 12px;
 }
+
+#attachDescription {
+  position : relative;
+  top : 430px;
+}

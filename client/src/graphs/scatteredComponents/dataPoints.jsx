@@ -20,7 +20,7 @@ class DataPoints extends Component {
             <DataPoint
               salary={Number(yVal.substring(1))}
               date={new Date(Number(this.props.x[index]))}
-              company={this.props.company}
+              company={this.props.name[index]}
               yMin={this.props.yMin}
               xMin={this.props.xMin}
               xMax={this.props.xMax}
